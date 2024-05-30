@@ -8,7 +8,7 @@ public class UnitTest1
     public async Task Cache_Parallel_Add_Contains_All_Values()
     {
         //arrange
-        ICache cache = new Cache();
+        ICache<int> cache = new Cache<int>();
 
         var providers = Enumerable
             .Range(1, 5)
@@ -36,7 +36,7 @@ public class UnitTest1
     public async Task Cache_Add_Contains_All_Values()
     {
         //arrange
-        ICache cache = new Cache();
+        ICache<int> cache = new Cache<int>();
 
         var providers = Enumerable
             .Range(1, 5)
@@ -52,20 +52,4 @@ public class UnitTest1
             Assert.Equal(providers.Count, cache.Count);
         }
     }
-}
-
-public class ValueProvider(string key)
-{
-    public string Key { get; } = key;
-    private int _calledCount;
-    public int CalledCount => _calledCount;
-
-    public async Task<int> ValueFactory()
-    {
-        await Task.Delay(Random.Shared.Next() % 5);
-        Interlocked.Increment(ref _calledCount);
-        return _calledCount;
-    }
-
-    public override string ToString() => $"{nameof(ValueProvider)}{{Key = {Key}; CalledCount = {_calledCount}}}";
 }

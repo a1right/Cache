@@ -3,15 +3,15 @@ using Timer = System.Timers.Timer;
 
 namespace Caching;
 
-public class CacheEntry
+public class CacheEntry<T>
 {
     public bool IsExpired { get; private set; }
     private readonly CacheOptions? _options;
     private readonly object _key;
-    private readonly Cache _cache;
-    public object? Value { get; }
+    private readonly Cache<T> _cache;
+    public T? Value { get; }
 
-    internal CacheEntry(object key, object? value, Cache cache, CacheOptions? options = null)
+    internal CacheEntry(object key, T? value, Cache<T> cache, CacheOptions? options = null)
     {
         Value = value;
         _key = key;

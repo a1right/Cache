@@ -9,9 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Dumpify" Version="0.6.6" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cache.DependencyInjection\Cache.DependencyInjection.csproj" />
     <ProjectReference Include="..\Cache\Caching.csproj" />
   </ItemGroup>
 

@@ -3,17 +3,19 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Tests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("Cache.DependencyInjection", AllInternalsVisible = true)]
+
 namespace Caching;
 
-internal class Cache : ICache, IEnumerable
+internal class Cache<TValue> : ICache<TValue>, IEnumerable
 {
-    public object? this[object key] => _values.TryGetValue(key, out var cached) ? cached.Value : null;
+    public TValue? this[object key] => _values.TryGetValue(key, out var cached) ? cached.Value : default;
     private readonly CacheOptions? _options;
-    private readonly ConcurrentDictionary<object, CacheEntry> _values = [];
+    private readonly ConcurrentDictionary<object, CacheEntry<TValue>> _values = [];
     private readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphores = [];
     private readonly object _lock = new();
     public int Count => _values.Count;
-    public IReadOnlyDictionary<object, CacheEntry> Values => _values;
+    public IReadOnlyDictionary<object, CacheEntry<TValue>> Values => _values;
     public IReadOnlyDictionary<object, SemaphoreSlim> Semaphores => _semaphores;
 
     public Cache() { }
@@ -23,10 +25,10 @@ internal class Cache : ICache, IEnumerable
         _options = options;
     }
 
-    public async Task<TValue?> GetOrAdd<TKey, TValue>(TKey key, Func<Task<TValue>> valueFactory, CacheOptions? options = null) where TKey : notnull
+    public async Task<TValue?> GetOrAdd<TKey>(TKey key, Func<Task<TValue>> valueFactory, CacheOptions? options = null) where TKey : notnull
     {
         if (_values.TryGetValue(key, out var value))
-            return (TValue?)value.Value;
+            return value.Value;
 
         var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
 
@@ -35,12 +37,12 @@ internal class Cache : ICache, IEnumerable
             await semaphore.WaitAsync();
 
             if (_values.TryGetValue(key, out value))
-                return (TValue?)value.Value;
+                return value.Value;
 
-            value = new CacheEntry(key, await valueFactory(), this, options ?? _options);
+            value = new CacheEntry<TValue>(key, await valueFactory(), this, options ?? _options);
             _values.TryAdd(key, value);
             semaphore.Release();
-            return (TValue?)value.Value;
+            return value.Value;
         }
         finally
         {
@@ -48,7 +50,7 @@ internal class Cache : ICache, IEnumerable
         }
     }
 
-    public bool TryGet<TKey, TValue>(TKey key, out TValue? value) where TKey : notnull
+    public bool TryGet<TKey>(TKey key, out TValue? value) where TKey : notnull
     {
         var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
 
@@ -57,7 +59,7 @@ internal class Cache : ICache, IEnumerable
             semaphore.Wait();
 
             var result = _values.TryGetValue(key, out var cacheEntry);
-            value = (TValue?)cacheEntry?.Value;
+            value = cacheEntry is null ? default : cacheEntry.Value;
             return result;
         }
         finally
