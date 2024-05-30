@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caching", "Cache\Caching.csproj", "{8917C0DF-975A-4770-AA6F-C91DFF6E4671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{A3E00362-5465-4FFE-A741-2E2C2676D684}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{7123ADBC-FA9D-438A-B1A9-C9A7A2B9FB11}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8917C0DF-975A-4770-AA6F-C91DFF6E4671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8917C0DF-975A-4770-AA6F-C91DFF6E4671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8917C0DF-975A-4770-AA6F-C91DFF6E4671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8917C0DF-975A-4770-AA6F-C91DFF6E4671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E00362-5465-4FFE-A741-2E2C2676D684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E00362-5465-4FFE-A741-2E2C2676D684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E00362-5465-4FFE-A741-2E2C2676D684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E00362-5465-4FFE-A741-2E2C2676D684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7123ADBC-FA9D-438A-B1A9-C9A7A2B9FB11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7123ADBC-FA9D-438A-B1A9-C9A7A2B9FB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7123ADBC-FA9D-438A-B1A9-C9A7A2B9FB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7123ADBC-FA9D-438A-B1A9-C9A7A2B9FB11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69B8D914-5ECE-4DC3-AE3C-0ECB1B2EB427}
+	EndGlobalSection
+EndGlobal
