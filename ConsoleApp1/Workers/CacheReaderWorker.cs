@@ -43,10 +43,4 @@ internal class CacheReaderWorker(
             }
         }
     }
-
-    private async Task<int> GetAsyncValue()
-    {
-        await Task.Delay(100);
-        return Random.Shared.Next() % 5;
-    }
 }

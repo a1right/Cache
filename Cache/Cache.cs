@@ -12,10 +12,7 @@ internal class Cache<TValue> : ICache<TValue>
     private readonly CacheOptions? _options;
     private readonly ConcurrentDictionary<object, CacheEntry<TValue>> _values = [];
     private readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphores = [];
-    private readonly object _lock = new();
     public int Count => _values.Count;
-    public IReadOnlyDictionary<object, CacheEntry<TValue>> Values => _values;
-    public IReadOnlyDictionary<object, SemaphoreSlim> Semaphores => _semaphores;
 
     public Cache() { }
 
