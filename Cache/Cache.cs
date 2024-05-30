@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Tests", AllInternalsVisible = true)]
@@ -7,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace Caching;
 
-internal class Cache<TValue> : ICache<TValue>, IEnumerable
+internal class Cache<TValue> : ICache<TValue>
 {
     public TValue? this[object key] => _values.TryGetValue(key, out var cached) ? cached.Value : default;
     private readonly CacheOptions? _options;
@@ -82,10 +81,5 @@ internal class Cache<TValue> : ICache<TValue>, IEnumerable
             _semaphores.Remove(key, out _);
             semaphore.Release();
         }
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        return _values.GetEnumerator();
     }
 }
