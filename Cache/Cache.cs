@@ -14,19 +14,22 @@ internal class Cache<TValue> : ICache<TValue>
     private readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphores = [];
     public int Count => _values.Count;
 
-    public Cache() { }
+    public Cache()
+    {
+    }
 
     public Cache(CacheOptions options)
     {
         _options = options;
     }
 
-    public async Task<TValue?> GetOrAdd<TKey>(TKey key, Func<Task<TValue>> valueFactory, CacheOptions? options = null) where TKey : notnull
+    public async Task<TValue?> GetOrAdd<TKey>(TKey key, Func<Task<TValue>> valueFactory, CacheOptions? options = null)
+        where TKey : notnull
     {
         if (_values.TryGetValue(key, out var value))
             return value.Value;
 
-        var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
+        using var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
 
         try
         {
@@ -37,46 +40,24 @@ internal class Cache<TValue> : ICache<TValue>
 
             value = new CacheEntry<TValue>(key, await valueFactory(), this, options ?? _options);
             _values.TryAdd(key, value);
-            semaphore.Release();
             return value.Value;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-    }
-
-    public bool TryGet<TKey>(TKey key, out TValue? value) where TKey : notnull
-    {
-        var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
-
-        try
-        {
-            semaphore.Wait();
-
-            var result = _values.TryGetValue(key, out var cacheEntry);
-            value = cacheEntry is null ? default : cacheEntry.Value;
-            return result;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-    }
-
-    public bool Remove<TKey>(TKey key) where TKey : notnull
-    {
-        var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
-
-        try
-        {
-            semaphore.Wait();
-            return _values.TryRemove(key, out _);
         }
         finally
         {
             _semaphores.Remove(key, out _);
             semaphore.Release();
         }
+    }
+
+    public bool TryGet<TKey>(TKey key, out TValue? value) where TKey : notnull
+    {
+        var result = _values.TryGetValue(key, out var cacheEntry);
+        value = cacheEntry is null ? default : cacheEntry.Value;
+        return result;
+    }
+
+    public bool Remove<TKey>(TKey key) where TKey : notnull
+    {
+        return _values.TryRemove(key, out _);
     }
 }
