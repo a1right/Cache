@@ -95,7 +95,7 @@ public class Cache
 
         var provider = new ValueProvider()
             .SetKey($"key")
-            .SetDelay(TimeSpan.FromMilliseconds(1000));
+            .SetDelay(TimeSpan.FromMilliseconds(100));
 
         List<Task> tasks = [];
 
@@ -124,5 +124,22 @@ public class Cache
         //assert
         Assert.False(cache.TryGet(provider.Key, out var value));
         Assert.Equal(0, value);
+    }
+
+    [Fact]
+    public async Task Removed_Item_Expiration_Timer_Is_Not_Active()
+    {
+        //arrange
+        ICache<int> cache = new Cache<int>(new CacheOptions() { ExpirationTime = TimeSpan.FromMilliseconds(10) });
+        var provider = new ValueProvider().SetKey("key");
+
+        //act
+        await cache.GetOrAdd(provider.Key, provider.ValueFactory);
+        cache.Remove(provider.Key);
+        var addedValue = await cache.GetOrAdd(provider.Key, provider.ValueFactory, new CacheOptions() { ExpirationTime = TimeSpan.FromSeconds(10) });
+        await Task.Delay(10);
+        //assert
+        Assert.True(cache.TryGet(provider.Key, out var value));
+        Assert.Equal(addedValue, value);
     }
 }
