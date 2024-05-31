@@ -1,4 +1,6 @@
-﻿namespace Caching;
+﻿using Caching.Exceptions;
+
+namespace Caching;
 
 public class CacheOptions
 {
