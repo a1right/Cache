@@ -25,10 +25,3 @@ public class CacheOptions
             throw new InvalidExpirationTimeException(ExpirationTime);
     }
 }
-
-public class CacheException(string message) : Exception(message);
-
-public class InvalidExpirationTimeException(TimeSpan expirationTime) : CacheException($"Expiration time {expirationTime} is not valid")
-{
-
-}

@@ -10,6 +10,7 @@ internal class CacheEntry<T> : IDisposable
     private readonly object _key;
     private readonly Cache<T> _cache;
     private Timer? _timer;
+    private bool _disposed;
     public T? Value { get; }
 
     internal CacheEntry(object key, T? value, Cache<T> cache, CacheOptions? options = null)
@@ -20,6 +21,8 @@ internal class CacheEntry<T> : IDisposable
         _options = options;
         RegisterExpiredEventHandler();
     }
+
+    ~CacheEntry() => Dispose(false);
 
     private void RegisterExpiredEventHandler()
     {
@@ -40,10 +43,21 @@ internal class CacheEntry<T> : IDisposable
 
     public void Dispose()
     {
-        if (_timer is null)
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
             return;
 
-        _timer.Elapsed -= ExpiredHandler;
-        _timer.Dispose();
+        if (_timer != null)
+        {
+            _timer.Elapsed -= ExpiredHandler;
+            _timer.Dispose();
+        }
+
+        _disposed = true;
     }
 }

@@ -1,30 +1,37 @@
 namespace Tests;
 
-public class ValueProvider
+public class ValueProvider<T>
 {
-    public object Key { get; private set; }
+    public object Key { get; private set; } = null!;
+    public Func<ValueProvider<T>, T?> ValueFactoryFunc { get; private set; } = _ => default(T);
     public TimeSpan Delay { get; private set; } = TimeSpan.Zero;
     private int _calledCount;
     public int CalledCount => _calledCount;
 
-    public async Task<int> ValueFactory()
+    public async Task<T?> ValueFactory()
     {
-        await Task.Delay(Random.Shared.Next() % 5);
+        await Task.Delay(Delay);
         Interlocked.Increment(ref _calledCount);
-        return _calledCount;
+        return ValueFactoryFunc(this);
     }
 
-    public ValueProvider SetDelay(TimeSpan delay)
+    public ValueProvider<T> SetDelay(TimeSpan delay)
     {
         Delay = delay;
         return this;
     }
 
-    public ValueProvider SetKey(object key)
+    public ValueProvider<T> SetKey(object key)
     {
         Key = key;
         return this;
     }
 
-    public override string ToString() => $"{nameof(ValueProvider)}{{Key = {Key}; CalledCount = {_calledCount}}}";
+    public ValueProvider<T> SetReturnValue(Func<ValueProvider<T>, T?> valueFactory)
+    {
+        ValueFactoryFunc = valueFactory;
+        return this;
+    }
+
+    public override string ToString() => $"{typeof(ValueProvider<>).Name}{{Key = {Key}; CalledCount = {_calledCount}}}";
 }
