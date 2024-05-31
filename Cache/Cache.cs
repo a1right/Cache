@@ -31,13 +31,9 @@ internal class Cache<TValue> : ICache<TValue>
 
         var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
 
-        Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} entered method");
-
         try
         {
             await semaphore.WaitAsync();
-
-            Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} entered critical section");
 
             if (_values.TryGetValue(key, out value))
                 return value.Value;
