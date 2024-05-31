@@ -1,1 +1,1 @@
-Implementation of memory cache from https://github.com/a1right/Cache/tree/master/Cache
+Implementation of memory cache from https://gist.github.com/navferty/41fe7b2fc6e81ef1b225bb854370c34c
