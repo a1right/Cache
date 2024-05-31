@@ -23,7 +23,7 @@ internal class CacheEntry<T> : IDisposable
 
     private void RegisterExpiredEventHandler()
     {
-        if (_options is null)
+        if (_options is null || _options.ExpirationTime == TimeSpan.Zero)
             return;
 
         _timer = new Timer(_options.ExpirationTime);

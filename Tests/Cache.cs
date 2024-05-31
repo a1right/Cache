@@ -95,7 +95,7 @@ public class Cache
 
         var provider = new ValueProvider()
             .SetKey($"key")
-            .SetDelay(TimeSpan.FromMilliseconds(100));
+            .SetDelay(TimeSpan.FromMilliseconds(1000));
 
         List<Task> tasks = [];
 
@@ -131,15 +131,35 @@ public class Cache
     {
         //arrange
         ICache<int> cache = new Cache<int>(new CacheOptions() { ExpirationTime = TimeSpan.FromMilliseconds(10) });
-        var provider = new ValueProvider().SetKey("key");
+        var provider = new ValueProvider().SetKey("key").SetDelay(TimeSpan.Zero);
 
         //act
         await cache.GetOrAdd(provider.Key, provider.ValueFactory);
         cache.Remove(provider.Key);
         var addedValue = await cache.GetOrAdd(provider.Key, provider.ValueFactory, new CacheOptions() { ExpirationTime = TimeSpan.FromSeconds(10) });
-        await Task.Delay(10);
+        await Task.Delay(50);
         //assert
         Assert.True(cache.TryGet(provider.Key, out var value));
         Assert.Equal(addedValue, value);
+    }
+
+    [Fact]
+    public void Negative_ExpirationTime_Throws_Invalid_Expiration_Time_Exception()
+    {
+        Assert.Throws<InvalidExpirationTimeException>(() =>
+        {
+            var options = new CacheOptions()
+            {
+                ExpirationTime = TimeSpan.MinValue
+            };
+
+            ICache<int> cache = new Cache<int>(options);
+        });
+    }
+
+    [Fact]
+    public void CacheOptions_Created_With_No_Value()
+    {
+        var options = new CacheOptions();
     }
 }

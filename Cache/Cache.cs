@@ -29,7 +29,7 @@ internal class Cache<TValue> : ICache<TValue>
         if (_values.TryGetValue(key, out var value))
             return value.Value;
 
-        using var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
+        var semaphore = _semaphores.GetOrAdd(key, new SemaphoreSlim(1));
 
         Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} entered method");
 
@@ -49,8 +49,11 @@ internal class Cache<TValue> : ICache<TValue>
         finally
         {
             semaphore.Release();
-            if (_semaphores.Remove(key, out var storedSemaphore))
-                storedSemaphore.Dispose();
+            if (semaphore.CurrentCount == 1)
+            {
+                _semaphores.Remove(key, out _);
+                semaphore.Dispose();
+            }
         }
     }
 
